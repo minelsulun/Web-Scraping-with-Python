@@ -29,7 +29,7 @@ def get_house_details(house_url):
         date = soup.find('li', class_='publish-date').text.strip() if soup.find('li', class_='publish-date') else 'N/A'
 
         # İlan metni
-        description = soup.find('div', class_='classified-detail-text').text.strip() if soup.find('div', class_='classified-detail-text') else 'N/A'
+        description = soup.find('div', class_='inner-html description').text.strip() if soup.find('div', class_='inner-html description') else 'N/A'
 
         # İlan detayları (metrekare, oda sayısı, bina yaşı, vb.)
         info_table = soup.find_all('li', class_='spec-item')
