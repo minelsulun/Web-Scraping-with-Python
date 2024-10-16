@@ -10,7 +10,7 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36'
 }
 
-MAX_LISTINGS = 20  # Çekmek istediğimiz ilan sayısı
+MAX_LISTINGS = 500  # Çekmek istediğimiz ilan sayısı
 
 def get_house_details(house_url):
     """Her ilan detay sayfasından ilan bilgilerini alır."""
@@ -99,7 +99,7 @@ def main():
 
     # Excel dosyasına yazma işlemi
     df = pd.DataFrame(all_house_data)
-    df.to_excel("ilanlar2.xlsx", index=False)
+    df.to_excel("ilanlar3.xlsx", index=False)
 
     print("İlan bilgileri 'ilanlar.xlsx' dosyasına kaydedildi.")
 
