@@ -13,7 +13,7 @@ HEADERS = {
 
 
 def get_house_details(house_url):
-    """Her ilan detay sayfasından başlık, fiyat, ilan no, metrekare ve oda sayısı gibi bilgileri alır."""
+    """Her ilan detay sayfasından başlık, fiyat, ilan no, metrekare, oda sayısı gibi bilgileri alır."""
     try:
         response = requests.get(house_url, headers=HEADERS)
         response.raise_for_status()  # Hata durumunu yakala
@@ -22,38 +22,55 @@ def get_house_details(house_url):
         # İlan başlığı
         title = soup.find('h1', class_='fontRB').text.strip() if soup.find('h1', class_='fontRB') else 'N/A'
 
-        # Fiyat bilgisi
-        price = soup.find('p', class_='fontRB fz24 price').text.strip() if soup.find('p',
-                                                                                     class_='fontRB fz24 price') else 'N/A'
+        # Kira bedeli
+        price = soup.find('p', class_='fontRB fz24 price').text.strip() if soup.find('p', class_='fontRB fz24 price') else 'N/A'
 
-        # İlan detayları (Metrekare, Oda Sayısı vb.)
+        # İlan tarihi
+        date = soup.find('li', class_='publish-date').text.strip() if soup.find('li', class_='publish-date') else 'N/A'
+
+        # İlan metni
+        description = soup.find('div', class_='classified-detail-text').text.strip() if soup.find('div', class_='classified-detail-text') else 'N/A'
+
+        # İlan detayları (metrekare, oda sayısı, bina yaşı, vb.)
         info_table = soup.find_all('li', class_='spec-item')
         details = {}
 
         for item in info_table:
             span = item.find('span')
             b = item.find('b')
-            # span ve b öğelerinin olup olmadığını kontrol et
             if span and b:
                 details[span.text.strip()] = b.text.strip()
             else:
                 print("Some details are missing for an item.")
 
+        # Detaylardan ilgili bilgileri çekme
         area = details.get('Brüt Metrekare', 'N/A')
         rooms = details.get('Oda + Salon', 'N/A')
         listing_id = details.get('İlan No', 'N/A')
+        age = details.get('Bina Yaşı', 'N/A')
+        floor = details.get('Bulunduğu Kat', 'N/A')
+        furnished = details.get('Eşyalı', 'N/A')
+        natural_gas = details.get('Doğalgaz', 'N/A')
+        neighborhood = details.get('Mahalle', 'N/A')
 
         return {
             'Title': title,
             'Price': price,
+            'Date': date,
+            'Description': description,
             'Area': area,
             'Rooms': rooms,
-            'Listing ID': listing_id
+            'Listing ID': listing_id,
+            'Building Age': age,
+            'Floor': floor,
+            'Furnished': furnished,
+            'Natural Gas': natural_gas,
+            'Neighborhood': neighborhood
         }
+
     except requests.RequestException as e:
         print(f"Error fetching {house_url}: {e}")
         return None
-
 
 def scrape_houses_from_page(url):
     """Bir sayfadaki tüm ilanların bilgilerini alır."""
