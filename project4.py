@@ -12,7 +12,7 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36'
 }
 
-MAX_LISTINGS = 500
+MAX_LISTINGS = 100 #Number of desired ads
 MAX_RETRIES = 5
 RETRY_DELAY = 60  # Increased delay
 RATE_LIMIT_DELAY = 300  # 5 minutes wait when hit by rate limit
@@ -127,7 +127,7 @@ def main():
         print(f"Total listings scraped so far: {len(all_house_data)}")
         page += 1
 
-        sleep_time = random.uniform(5, 10)
+        sleep_time = random.uniform(1, 2)
         print(f"Waiting for {sleep_time:.2f} seconds before next page...")
         time.sleep(sleep_time)
 
