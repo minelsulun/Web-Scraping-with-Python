@@ -12,7 +12,7 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36'
 }
 
-MAX_LISTINGS = 100 #Number of desired ads
+MAX_LISTINGS = 500
 MAX_RETRIES = 5
 RETRY_DELAY = 60  # Increased delay
 RATE_LIMIT_DELAY = 300  # 5 minutes wait when hit by rate limit
@@ -31,19 +31,32 @@ def get_house_details(house_url):
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'lxml')
 
+            # Find the price
+            price_tag = soup.find('p', class_='fz24-text price')
+            price = price_tag.text.strip() if price_tag else "N/A"
+
+            # Find the description
+            description_tag = soup.find('h1', class_='fontRB')
+            description = description_tag.text.strip() if description_tag else "N/A"
+
+            # Extract other details
             info_table = soup.find_all('li', class_='spec-item')
             if not info_table:
                 print(f"No data found: {house_url}")
                 return None
 
-            details = {"URL": house_url}
+            details = {
+                "URL": house_url,
+                "Kira Ücreti": price,        # Add the price
+                "Açıklama": description      # Add the description
+            }
             for item in info_table:
                 key = item.find('span', class_='txt').text.strip()
                 value = item.find_all('span')[-1].text.strip()
                 details[key] = value
 
             # Remove unwanted keys
-            unwanted_keys = ['Ada No', 'Aidat', 'Parsel No', 'Site İçerisinde', 'Krediye Uygunluk']
+            unwanted_keys = ['Ada No', 'Aidat', 'Parsel No', 'Konut Şekli', 'Site İçerisinde', 'Krediye Uygunluk']
             for key in unwanted_keys:
                 details.pop(key, None)
 
@@ -58,6 +71,8 @@ def get_house_details(house_url):
             else:
                 print(f"Max retries reached. Skipping {house_url}")
                 return None
+
+
 
 def scrape_links_and_fetch_data(url, collected_data):
     """Scrape links from a page and fetch details for each listing."""
@@ -93,7 +108,7 @@ def scrape_links_and_fetch_data(url, collected_data):
                     else:
                         print(f"No data: {full_url}")
 
-                    sleep_time = random.uniform(3, 7)
+                    sleep_time = random.uniform(1, 3)
                     print(f"Waiting for {sleep_time:.2f} seconds before next request...")
                     time.sleep(sleep_time)
 
@@ -127,7 +142,7 @@ def main():
         print(f"Total listings scraped so far: {len(all_house_data)}")
         page += 1
 
-        sleep_time = random.uniform(1, 2)
+        sleep_time = random.uniform(5, 10)
         print(f"Waiting for {sleep_time:.2f} seconds before next page...")
         time.sleep(sleep_time)
 
@@ -136,8 +151,8 @@ def main():
     if all_house_data:
         # Write to Excel file
         df = pd.DataFrame(all_house_data)
-        df.to_excel("ilanlar3.xlsx", index=False)
-        print("Listing information saved to 'ilanlar3.xlsx'.")
+        df.to_excel("ilanlar4.xlsx", index=False)
+        print("Listing information saved to 'ilanlar4.xlsx'.")
     else:
         print("No data was collected. Excel file was not created.")
 
